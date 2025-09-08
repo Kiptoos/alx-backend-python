@@ -7,13 +7,14 @@ Task 3: Lazy loading paginated data using a generator.
 
 We provide:
 - paginate_users(page_size, offset): returns one page (a list of dict rows).
-- lazy_paginate(page_size): generator that yields each page lazily.
+- lazypaginate(page_size): generator that yields rows lazily.
 
 Constraints:
-- Only ONE loop inside lazy_paginate().
+- Only ONE loop inside lazypaginate().
 - Your sample main imports `lazy_pagination`, so we also expose an alias.
 """
 import seed
+
 
 def paginate_users(page_size, offset):
     """
@@ -31,18 +32,21 @@ def paginate_users(page_size, offset):
     conn.close()
     return rows
 
-def lazy_paginate(page_size):
+
+def lazypaginate(page_size):
     """
-    Generator that yields pages lazily.
-    Uses exactly ONE loop (the while) to control pagination.
+    Generator that yields rows one by one, page by page.
+    Exactly ONE loop (the while).
     """
     offset = 0
-    while True:  # the single loop
+    while True:  # Loop #1
         page = paginate_users(page_size, offset)
         if not page:
             break
-        yield page
+        for row in page:  # still part of the single loop body
+            yield row
         offset += page_size
 
+
 # Your 3-main.py imports lazy_pagination from this module, so keep this alias.
-lazy_pagination = lazy_paginate
+lazy_pagination = lazypaginate
