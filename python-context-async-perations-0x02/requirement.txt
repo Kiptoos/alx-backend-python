@@ -1,0 +1,24 @@
+aiosqlite>=0.20
+
+
+alx-backend-python/
+└── python-context-async-perations-0x02/
+    ├── 0-databaseconnection.py
+    ├── 1-execute.py
+    └── 3-concurrent.py
+
+databaseconnection
+
+CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);
+INSERT INTO users (name, age) VALUES ('Amina', 22), ('Brian', 41), ('Chen', 35), ('Dayo', 55);
+
+
+Running Locally
+
+# (optional) python3 -m venv .venv && source .venv/bin/activate
+pip install aiosqlite
+
+export DB_PATH=users.db  # or leave to default 'users.db'
+python3 0-databaseconnection.py
+python3 1-execute.py
+python3 3-concurrent.py
