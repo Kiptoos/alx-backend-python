@@ -1,5 +1,7 @@
 aiosqlite>=0.20
 
+aiosqlite>=0.20
+
 
 alx-backend-python/
 └── python-context-async-perations-0x02/
@@ -22,3 +24,4 @@ export DB_PATH=users.db  # or leave to default 'users.db'
 python3 0-databaseconnection.py
 python3 1-execute.py
 python3 3-concurrent.py
+
