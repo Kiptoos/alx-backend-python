@@ -32,14 +32,4 @@ async def fetch_concurrently(db_path: str):
         async_fetch_users(db_path),
         async_fetch_older_users(db_path)
     )
-    print("All users:")
-    for r in all_users:
-        print(r)
-    print("\nUsers older than 40:")
-    for r in older_users:
-        print(r)
-
-
-if __name__ == "__main__":
-    db_path = os.getenv("DB_PATH", "users.db")
-    asyncio.run(fetch_concurrently(db_path))
+    print("All use
