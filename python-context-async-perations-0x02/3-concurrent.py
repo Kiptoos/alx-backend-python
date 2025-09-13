@@ -7,7 +7,7 @@ import os
 import asyncio
 import aiosqlite
 
-async def async_fetch_users(db_path: str):
+async def asyncfetchusers(db_path: str):
     """Fetch all users asynchronously."""
     async with aiosqlite.connect(db_path) as db:
         db.row_factory = aiosqlite.Row
@@ -15,13 +15,14 @@ async def async_fetch_users(db_path: str):
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
 
-async def async_fetch_older_users(db_path: str):
+async def asyncfetcholder_users(db_path: str):
     """Fetch users older than 40 asynchronously."""
     async with aiosqlite.connect(db_path) as db:
         db.row_factory = aiosqlite.Row
         async with db.execute("SELECT * FROM users WHERE age > 40") as cursor:
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
+
 
 async def fetch_concurrently(db_path: str):
     """Run both queries concurrently and print results."""
@@ -41,3 +42,4 @@ async def fetch_concurrently(db_path: str):
 if __name__ == "__main__":
     db_path = os.getenv("DB_PATH", "users.db")
     asyncio.run(fetch_concurrently(db_path))
+
