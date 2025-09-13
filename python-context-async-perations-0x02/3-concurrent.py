@@ -27,8 +27,8 @@ async def asyncfetcholder_users(db_path: str):
 async def fetch_concurrently(db_path: str):
     """Run both queries concurrently and print results."""
     all_users, older_users = await asyncio.gather(
-        async_fetch_users(db_path),
-        async_fetch_older_users(db_path)
+        asyncfetchusers(db_path),
+        asyncfetcholder_users(db_path)
     )
 
     print("All users:")
@@ -39,7 +39,9 @@ async def fetch_concurrently(db_path: str):
     for user in older_users:
         print(user)
 
+
 if __name__ == "__main__":
     db_path = os.getenv("DB_PATH", "users.db")
     asyncio.run(fetch_concurrently(db_path))
+
 
