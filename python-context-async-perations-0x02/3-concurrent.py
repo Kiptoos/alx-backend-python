@@ -40,4 +40,4 @@ async def fetch_concurrently(db_path: str):
 
 if __name__ == "__main__":
     db_path = os.getenv("DB_PATH", "users.db")  # Default fallback path
-    asyncio.run(fetch_concurrently(db_path))
+    asyncio.run(fetch_concurrently(db_path))    # Required entry point
