@@ -27,37 +27,33 @@ class TestGithubOrgClient(unittest.TestCase):
         mock_get_json.assert_called_once_with(f"https://api.github.com/orgs/{org_name}")
 
     # Task 5: mock a property via patching the memoized org
-    def test_public_repos_url(self):
-        """_public_repos_url derives from org['repos_url']"""
-        payload = {"repos_url": "https://api.github.com/orgs/google/repos"}
-        with patch.object(GithubOrgClient, "org", new_callable=Mock(return_value=payload)):
-            client = GithubOrgClient("google")
-            self.assertEqual(
-                client._public_repos_url, "https://api.github.com/orgs/google/repos"
-            )
+from unittest.mock import patch, PropertyMock
+
+def test_public_repos_url(self):
+    payload = {"repos_url": "https://api.github.com/orgs/google/repos"}
+    with patch.object(GithubOrgClient, "org", new_callable=PropertyMock) as mock_org:
+        mock_org.return_value = payload
+        client = GithubOrgClient("google")
+        self.assertEqual(client._public_repos_url, payload["repos_url"])
+
 
     # Task 6: more patching
     @patch("client.get_json")
-    def test_public_repos(self, mock_get_json):
-        """public_repos returns repo names and calls dependencies once"""
-        repos_payload = [
-            {"name": "repo1", "license": {"key": "mit"}},
-            {"name": "repo2", "license": {"key": "apache-2.0"}},
-            {"name": "repo3"},  # no license
-        ]
-        mock_get_json.return_value = repos_payload
-        # Mock the URL property used by repos_payload
-        with patch.object(GithubOrgClient, "_public_repos_url", new="http://api/repos"):
-            client = GithubOrgClient("any")
-            repos = client.public_repos()
-            self.assertEqual(repos, ["repo1", "repo2", "repo3"])
+def test_public_repos(self, mock_get_json):
+    repos_payload = [
+        {"name": "repo1", "license": {"key": "mit"}},
+        {"name": "repo2", "license": {"key": "apache-2.0"}},
+        {"name": "repo3"},
+    ]
+    mock_get_json.return_value = repos_payload
 
-            # license filter
-            repos_apache = client.public_repos(license="apache-2.0")
-            self.assertEqual(repos_apache, ["repo2"])
+    with patch.object(GithubOrgClient, "_public_repos_url",
+                      new_callable=PropertyMock, return_value="http://api/repos"):
+        client = GithubOrgClient("any")
+        self.assertEqual(client.public_repos(), ["repo1", "repo2", "repo3"])
+        self.assertEqual(client.public_repos(license="apache-2.0"), ["repo2"])
+        mock_get_json.assert_called_once_with("http://api/repos")
 
-            # called once because repos_payload is memoized per instance
-            mock_get_json.assert_called_once_with("http://api/repos")
 
     # Task 7: parameterize has_license
     @parameterized.expand([
@@ -122,3 +118,4 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
