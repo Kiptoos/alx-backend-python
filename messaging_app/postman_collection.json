@@ -1,0 +1,82 @@
+{
+  "info": {
+    "name": "Messaging App API",
+    "_postman_id": "c170930c-d658-4d56-ac26-fedca77b9625",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/conversations/",
+          "host": [
+            "http://localhost:8000"
+          ],
+          "path": [
+            "api",
+            "conversations",
+            ""
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"participants\": []}"
+        }
+      }
+    },
+    {
+      "name": "Send Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/conversations/:id/send_message/",
+          "host": [
+            "http://localhost:8000"
+          ],
+          "path": [
+            "api",
+            "conversations",
+            ":id",
+            "send_message",
+            ""
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"sender_id\": \"\", \"message_body\": \"Hello\"}"
+        }
+      }
+    },
+    {
+      "name": "List Messages",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8000/api/messages/",
+          "host": [
+            "http://localhost:8000"
+          ],
+          "path": [
+            "api",
+            "messages",
+            ""
+          ]
+        }
+      }
+    }
+  ]
+}
