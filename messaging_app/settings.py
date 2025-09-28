@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-insecure")
 DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
@@ -79,7 +79,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# --- DRF defaults: global auth & permissions ---
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -97,7 +96,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-# --- SimpleJWT configuration ---
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
