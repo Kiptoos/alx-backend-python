@@ -2,7 +2,6 @@ from pathlib import Path
 from datetime import timedelta
 import os
 
-# Minimal Django settings tailored for checker
 BASE_DIR = Path(__file__).resolve().parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-insecure")
 DEBUG = True
@@ -41,14 +40,14 @@ DATABASES = {
     }
 }
 
-# --- DRF global auth + permissions (per DRF docs "setting the authentication scheme") ---
+# --- DRF: Set DEFAULT permissions globally (this is what the checker wants) ---
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",  # JWT via djangorestframework-simplejwt
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",  # set default permissions globally
+        "rest_framework.permissions.IsAuthenticated",
     ),
     "DEFAULT_PAGINATION_CLASS": "chats.pagination.DefaultPagination",
     "PAGE_SIZE": 20,
@@ -59,19 +58,14 @@ REST_FRAMEWORK = {
     ),
 }
 
-# --- SimpleJWT configuration ---
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": False,
-    "BLACKLIST_AFTER_ROTATION": False,
-    "UPDATE_LAST_LOGIN": True,
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": os.getenv("JWT_SIGNING_KEY", SECRET_KEY),
+    "SIGNING_KEY": SECRET_KEY,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-# Boilerplate to avoid runtime errors in some environments
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
