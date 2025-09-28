@@ -19,7 +19,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # Django defaults
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -27,12 +26,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
-    # Custom (after Authentication so request.user works)
-    "chats.middleware.RequestLoggingMiddleware",        # log first
-    "chats.middleware.RestrictAccessByTimeMiddleware",  # gate by time
-    "chats.middleware.OffensiveLanguageMiddleware",     # rate limit posts
-    "chats.middleware.RolepermissionMiddleware",        # enforce roles
+    # --- Custom middlewares (order matters) ---
+    "chats.middleware.RequestLoggingMiddleware",
+    "chats.middleware.RestrictAccessByTimeMiddleware",
+    "chats.middleware.OffensiveLanguageMiddleware",
+    "chats.middleware.RolepermissionMiddleware",
 ]
 
 ROOT_URLCONF = "messaging_app.urls"
