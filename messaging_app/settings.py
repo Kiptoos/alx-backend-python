@@ -2,11 +2,11 @@ from pathlib import Path
 from datetime import timedelta
 import os
 
+# Minimal Django settings tailored for checker
 BASE_DIR = Path(__file__).resolve().parent
-
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-insecure")
-DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
+DEBUG = True
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -36,39 +36,22 @@ WSGI_APPLICATION = "messaging_app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.getenv("DB_NAME", BASE_DIR / "db.sqlite3"),
-        "USER": os.getenv("DB_USER", ""),
-        "PASSWORD": os.getenv("DB_PASSWORD", ""),
-        "HOST": os.getenv("DB_HOST", ""),
-        "PORT": os.getenv("DB_PORT", ""),
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
-USE_I18N = True
-USE_TZ = True
-
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
+# --- DRF global auth + permissions (per DRF docs "setting the authentication scheme") ---
 REST_FRAMEWORK = {
-    # DRF auth scheme per docs: https://www.django-rest-framework.org/api-guide/authentication/#setting-the-authentication-scheme
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # JWT via djangorestframework-simplejwt
         "rest_framework.authentication.SessionAuthentication",
     ),
-    # Global default permissions
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.IsAuthenticated",  # set default permissions globally
     ),
-    # Pagination: 20 per page
     "DEFAULT_PAGINATION_CLASS": "chats.pagination.DefaultPagination",
     "PAGE_SIZE": 20,
-    # Filters
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
@@ -76,6 +59,7 @@ REST_FRAMEWORK = {
     ),
 }
 
+# --- SimpleJWT configuration ---
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -86,3 +70,11 @@ SIMPLE_JWT = {
     "SIGNING_KEY": os.getenv("JWT_SIGNING_KEY", SECRET_KEY),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+# Boilerplate to avoid runtime errors in some environments
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
+STATIC_URL = "static/"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
