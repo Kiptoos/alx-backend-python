@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from .managers import UnreadMessagesManager  # if you created messaging/managers.py
 
 User = get_user_model()
 
@@ -12,23 +11,19 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now)
 
-    # Track edits on the message itself
+    # Track edits
     edited = models.BooleanField(default=False)
     edited_by = models.ForeignKey(
         User, null=True, blank=True, on_delete=models.SET_NULL, related_name="edited_messages"
     )
 
-    # Threaded replies
+    # ✅ Threaded replies (self-referential FK)
     parent_message = models.ForeignKey(
         "self", null=True, blank=True, on_delete=models.CASCADE, related_name="replies"
     )
 
     # Read flag
     read = models.BooleanField(default=False)
-
-    # Managers
-    objects = models.Manager()
-    unread = UnreadMessagesManager()  # custom manager that uses .only() for optimization
 
     class Meta:
         ordering = ["-timestamp"]
@@ -40,11 +35,11 @@ class Message(models.Model):
 class MessageHistory(models.Model):
     """
     Stores the old content BEFORE a Message is updated.
-    The checker looks for MessageHistory and edited_at here.
+    Checker looks for MessageHistory and edited_at here.
     """
     message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="history")
     old_content = models.TextField()
-    edited_at = models.DateTimeField(auto_now_add=True)  # <-- required token: edited_at
+    edited_at = models.DateTimeField(auto_now_add=True)  # <- required token: edited_at
     edited_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
