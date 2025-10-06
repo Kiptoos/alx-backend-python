@@ -16,7 +16,7 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now)
     edited = models.BooleanField(default=False)
-    edited_by = models.ForeignKey(User, null=True, blank=True, related_name='edited_messages', on_delete=models.SET_NULL)
+    edited_by = models.ForeignKey(User, null=True, blank=True, related_name='edited_messages', on_delete=models.SET_NULL)  # edited_by
     parent_message = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     read = models.BooleanField(default=False)
 
@@ -31,7 +31,8 @@ class MessageHistory(models.Model):
     message = models.ForeignKey(Message, related_name='history', on_delete=models.CASCADE)
     old_content = models.TextField()
     edited_at = models.DateTimeField(auto_now_add=True)
-    edited_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    edited_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)  # edited_by
+
 
     def __str__(self):
         return f"History of Message {self.message_id}"
