@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    paths:
+      - "messaging_app/**"
+      - "messaging_app/.github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "messaging_app/**"
+      - "messaging_app/.github/workflows/ci.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: messaging_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DJANGO_SETTINGS_MODULE: messaging_app.settings
+      DB_NAME: messaging_test
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: ./messaging_app
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-django coverage flake8
+
+      - name: Wait for MySQL
+        run: |
+          for i in `seq 1 20`; do
+            if mysql -h 127.0.0.1 -uroot -proot -e "SELECT 1" >/dev/null 2>&1; then
+              echo "MySQL is up"
+              break
+            fi
+            echo "MySQL not ready yet..."
+            sleep 3
+          done
+
+      - name: Run migrations
+        working-directory: ./messaging_app
+        run: |
+          python manage.py migrate --noinput
+
+      - name: Lint with flake8
+        working-directory: ./messaging_app
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+
+      - name: Run tests with coverage
+        working-directory: ./messaging_app
+        run: |
+          coverage run -m pytest
+          coverage xml
+          coverage report -m
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: messaging_app/coverage.xml
